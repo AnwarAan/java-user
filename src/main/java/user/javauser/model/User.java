@@ -1,4 +1,4 @@
-package user.javauser.entity;
+package user.javauser.model;
 
 import io.github.resilience4j.core.lang.NonNull;
 import jakarta.persistence.Entity;
