@@ -1,5 +1,6 @@
 package user.javauser.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import user.javauser.auth.AuthenticationRequest;
 import user.javauser.auth.AuthenticationResponse;
 import user.javauser.auth.RegisterRequest;
+import user.javauser.model.Role;
 import user.javauser.model.Token;
 import user.javauser.model.TokenType;
 import user.javauser.model.User;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+  @Autowired
   private final UserRepository repository;
   private final TokenRepository tokenRepository;
   private final PasswordEncoder passwordEncoder;
@@ -31,12 +34,31 @@ public class AuthenticationService {
   private final AuthenticationManager authenticationManager;
 
   public AuthenticationResponse register(RegisterRequest request) {
-    var user = User.builder()
+    User user = User.builder()
         .firstname(request.getFirstName())
         .lastname(request.getLastName())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
+        .build();
+    var savedUser = repository.save(user);
+    var jwtToken = jwtService.generateToken(user);
+    var refreshToken = jwtService.generateRefreshToken(user);
+    saveUserToken(savedUser, jwtToken);
+    return AuthenticationResponse.builder()
+        .accessToken(jwtToken)
+        .refreshToken(refreshToken)
+        .build();
+  }
+
+  public AuthenticationResponse createUser(String firstName, String lastName,
+      String email, String password, Role role) {
+    User user = User.builder()
+        .firstname(firstName)
+        .lastname(lastName)
+        .email(email)
+        .password(passwordEncoder.encode(lastName))
+        .role(role)
         .build();
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);

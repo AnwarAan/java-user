@@ -1,6 +1,8 @@
 package user.javauser.service;
 
 import java.security.Principal;
+import java.util.List;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    public List<User> findAllUser() {
+        return userRepository.findAll();
+    }
+
+    // public User findUserById(Long id) {
+    // return userRepository.findOne(id).orElse(null);
+    // }
+
     public void changePassowrd(ChangePasswordRequest request, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         if (passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -30,4 +40,5 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
+
 }

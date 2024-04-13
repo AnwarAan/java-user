@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import user.javauser.audit.ApplicationAuditAware;
@@ -18,6 +19,7 @@ import user.javauser.repository.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
+@Component
 public class ApplicationConfig {
   private final UserRepository userRepository;
 
